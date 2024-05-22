@@ -9,7 +9,9 @@ class Client:
         self.client.connect((host, port))
         self.name = input("Adınızı giriniz: ")
         self.client.send(self.name.encode())
+    
 
+        #user message history, group names history and, person contacts information are stored in json file
         self.history_file = f"{self.name}_history.json"
         self.groups_file = f"{self.name}_groups.json"
         self.contacts_file = f"{self.name}_contacts.json"
@@ -49,7 +51,7 @@ class Client:
 
     def main_menu(self):
         while True:
-            command = input("işelm seçin: (mesaj için=1/baglanti ekle=2/grup ekle=3/grup_goruntule=4/arama=5/çıkmak için quit): ")
+            command = input("işlem seçin: (mesaj için=1/baglanti ekle=2/grup ekle=3/grup_goruntule=4/arama=5/çıkmak için =quit): ")
             if command == '1':
                 self.send_messages()
             elif command == '2':
@@ -74,14 +76,18 @@ class Client:
             self.client.send(msg.encode())
 
     def add_contact(self):
-        contact_name = input("Eklemek istediğiniz kullanıcının ismi: ")
-        if contact_name not in self.contacts:
-            self.contacts.append(contact_name)
-            with open(self.contacts_file, 'w') as f:
-                json.dump(self.contacts, f)
-            print(f"{contact_name} bağlantı listenize eklendi.")
-        else:
-            print(f"{contact_name} zaten bağlantı listenizde.")
+        print("Bağlantı ekleme moduna girdiniz. Ana menüye dönmek için 'exit' yazın.")
+        while True:
+            contact_name = input("Eklemek istediğiniz kullanıcının ismi: ")
+            if contact_name.lower() == 'exit':
+                break
+            if contact_name not in self.contacts:
+                self.contacts.append(contact_name)
+                with open(self.contacts_file, 'w') as f:
+                    json.dump(self.contacts, f)
+                print(f"{contact_name} bağlantı listenize eklendi.")
+            else:
+                print(f"{contact_name} zaten bağlantı listenizde.")
 
     def add_group(self):
         group_name = input("Grup ismi: ")
@@ -89,17 +95,23 @@ class Client:
             self.groups[group_name] = []
         else:
             print(f"{group_name} zaten mevcut. Kullanıcı eklemeye devam edin.")
-        user_name = input("Gruba eklemek istediğiniz kullanıcı ismi: ")
-        if user_name in self.contacts:
-            if user_name not in self.groups[group_name]:
-                self.groups[group_name].append(user_name)
-                with open(self.groups_file, 'w') as f:
-                    json.dump(self.groups, f)
-                print(f"{user_name}, {group_name} grubuna eklendi.")
+        
+        print("Gruba eklemek istediğiniz kullanıcı isimlerini girin. Ekleme işlemi bittiğinde 'exit' yazın.")
+        while True:
+            user_name = input("Gruba eklemek istediğiniz kullanıcı ismi: ")
+            if user_name.lower() == 'exit':
+                break
+            if user_name in self.contacts:
+                if user_name not in self.groups[group_name]:
+                    self.groups[group_name].append(user_name)
+                    with open(self.groups_file, 'w') as f:
+                        json.dump(self.groups, f)
+                    print(f"{user_name}, {group_name} grubuna eklendi.")
+                else:
+                    print(f"{user_name} zaten {group_name} grubunda.")
             else:
-                print(f"{user_name} zaten {group_name} grubunda.")
-        else:
-            print(f"{user_name} bağlantı listenizde değil. Önce bağlantı listenize ekleyin.")
+                print(f"{user_name} bağlantı listenizde değil. Önce bağlantı listenize ekleyin.")
+
 
     def view_groups(self):
         for group, users in self.groups.items():

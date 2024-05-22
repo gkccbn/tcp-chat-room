@@ -5,12 +5,12 @@ import os
 
 class Server:
     def __init__(self, host='127.0.0.1', port=65431):
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #socket connection
         self.server.bind((host, port))
         self.server.listen()
         self.clients = {}
-        self.addresses = {}
-        self.messages = {}  # Kullanıcıların mesajlarını kaydetmek için
+        self.addresses = {} #store addresses
+        self.messages = {}  # store user messages
         
         if not os.path.exists('messages.json'):
             with open('messages.json', 'w') as f:
